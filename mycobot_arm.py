@@ -38,7 +38,7 @@ class MyArm:
         time.sleep(2)
         
     def yellow_two(self, mc) :
-        mc.send_angles([8.61, 21.88, -52.73, -44.82, 85.34, 1.14], 60)
+        mc.send_angles([8.61, 21.88, -52.73, -43.25, 85.34, 1.14], 60)
         time.sleep(2)
         mc.set_gripper_value(40, 40)
         time.sleep(2)
@@ -54,7 +54,7 @@ class MyArm:
         time.sleep(2)
         
     def orange_two(self, mc) :
-        mc.send_angles([0.96, -16.52, -30.76, -33.75, 90, 2.1], 40)
+        mc.send_angles([0.96, -14, -30.76, -30, 90, 2.1], 40)
         time.sleep(2)
         mc.set_gripper_value(60, 40)
         time.sleep(2)
@@ -83,15 +83,14 @@ def main() :
     mc = myArm.connect()
     mc.set_gripper_mode(0)
     myArm.angleReset(mc)
-    # myArm.pick(mc)
-    # myArm.yellow_one(mc)
-    # myArm.angleReset(mc)
-    # myArm.pick(mc)
-    # myArm.yellow_two(mc)
-    # myArm.angleReset(mc)
+    
     myArm.pick(mc)
-    myArm.red_one(mc)
+    myArm.orange_one(mc)
     myArm.angleReset(mc)
+    myArm.pick(mc)
+    myArm.orange_two(mc)
+    myArm.angleReset(mc)
+    
     mc.set_gripper_value(0, 40)
     
 if __name__ == '__main__':
