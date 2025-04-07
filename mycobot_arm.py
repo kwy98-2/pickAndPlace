@@ -37,6 +37,14 @@ class MyArm:
         mc.send_angles([8.61, 43.68, -80.41, -12.39, 83.23, 5.09], 40)
         time.sleep(2)
         
+    def yellow_two(self, mc) :
+        mc.send_angles([2.9, 24.87, -73.91, -27.5, 90.43, 1.14], 40)
+        time.sleep(2)
+        mc.set_gripper_value(40, 40)
+        time.sleep(2)
+        mc.send_angles([8.61, 43.68, -80.41, -12.39, 83.23, 5.09], 40)
+        time.sleep(2)
+        
     def orange_one(self, mc) :
         mc.send_angles([0.96, -16.52, -30.76, -33.75, 90, 2.1], 40)
         time.sleep(2)
