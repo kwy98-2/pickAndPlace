@@ -11,15 +11,14 @@ class MyArm:
     def connect(self):
         return MyCobot(self.port, self.baurd)
 
-    def pick(self, mc, model):
+    def pick(self, mc, model, cap):
         # 스캔 위치로 이동
         mc.set_gripper_value(40, 40)
         time.sleep(2)
         mc.send_angles([95.8, 33.48, -44.47, -47.72, 84.11, 0.35], 30)
         time.sleep(2)
 
-        # 카메라 ON + 감지
-        cap = cv2.VideoCapture(0)
+        # 인식 시작
         start_time = time.time()
         label_count = {}
         result_label = None
@@ -33,9 +32,6 @@ class MyArm:
             boxes = results[0].boxes
             names = results[0].names
             
-            annotated_frame = results[0].plot()
-            cv2.imshow("Object Detection", annotated_frame)
-            cv2.waitKey(1)
             
             for box in boxes:
                 cls = int(box.cls)
@@ -45,11 +41,8 @@ class MyArm:
 
             time.sleep(0.1)
 
-        cap.release()
-        cv2.destroyAllWindows()
-
         for label, count in label_count.items():
-            if count >= 2:
+            if count >= 1:
                 result_label = label
                 break
 
@@ -65,7 +58,11 @@ class MyArm:
             time.sleep(2)
 
         return result_label
-
+        
+    def angleReset(self, mc):
+        mc.send_angles([0, 0, 0, 0, 0, 0], 20)
+        time.sleep(2)
+        
     def red_one(self, mc):
         self.angleReset(mc)
         mc.send_angles([-3.69, -32.16, -18, -19.33, 97.91, 5.44], 40)
@@ -77,11 +74,12 @@ class MyArm:
 
     def red_two(self, mc):
         self.angleReset(mc)
-        mc.send_angles([1.4, -38, 7.5, -34, 90.08, -0.08], 40)
+        mc.send_angles([1.4, -38, 7.5, -35.4, 90.08, -0.08], 40)
         time.sleep(2)
         mc.set_gripper_value(60, 40)
         time.sleep(2)
         mc.send_angles([1.58, -34, -7.73, 6.5, 91.05, -4.04], 40)
+        
     def red_three(self, mc):
         self.angleReset(mc)
         mc.send_angles([1.4, -37, 17, -40, 90.08, -0.08], 40)
@@ -149,27 +147,36 @@ class MyArm:
         time.sleep(2)
 
     def green_one(self, mc):
+        self.angleReset(mc)
         mc.send_angles([-41.22, -37.08, -24.78, -19.68, 93.51, 4.3], 40)
         time.sleep(2)
         mc.set_gripper_value(60, 40)
         time.sleep(2)
         mc.send_angles([-41.22, -27, -24.78, -19.68, 93.51, 4.3], 40)
+        time.sleep(2)
+        self.angleReset(mc)
         time.sleep(2)
 
-    def green_two(self, mc): 
+    def green_two(self, mc):
+        self.angleReset(mc) 
         mc.send_angles([-41.22, -37.08, -24.78, -19.68, 93.51, 4.3], 40)
         time.sleep(2)
         mc.set_gripper_value(60, 40)
         time.sleep(2)
         mc.send_angles([-41.22, -27, -24.78, -19.68, 93.51, 4.3], 40)
+        time.sleep(2)
+        self.angleReset(mc)
         time.sleep(2)
         
-    def green_three(self, mc): 
+    def green_three(self, mc):
+        self.angleReset(mc) 
         mc.send_angles([-41.22, -37.08, -24.78, -19.68, 93.51, 4.3], 40)
         time.sleep(2)
         mc.set_gripper_value(60, 40)
         time.sleep(2)
         mc.send_angles([-41.22, -27, -24.78, -19.68, 93.51, 4.3], 40)
+        time.sleep(2)
+        self.angleReset(mc)
         time.sleep(2)
 
 def main():
@@ -186,6 +193,11 @@ def main():
         "Green": 0
     }
 
+    # 카메라 초기화 & warm-up
+    cap = cv2.VideoCapture(0)
+    time.sleep(1.5)
+    for _ in range(10): cap.read()
+
     while True:
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
@@ -193,7 +205,7 @@ def main():
             mc.send_angles([0, 0, 0, 0, 0, 0], 30)
             break
 
-        label = myArm.pick(mc, model)
+        label = myArm.pick(mc, model, cap)
 
         if label in color_count:
             color_count[label] += 1
@@ -235,6 +247,10 @@ def main():
 
         mc.send_angles([95.8, 33.48, -44.47, -47.72, 84.11, 0.35], 30)
         time.sleep(2)
+
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     main()
